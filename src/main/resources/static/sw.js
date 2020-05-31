@@ -48,25 +48,43 @@ self.addEventListener('activate', function (e) {
 
 // 监听 push 事件
 self.addEventListener('push', function (e) {
+  console.log('push event', e)
   if (!e.data) {
     return
   }
   // 解析获取推送消息
-  let payload = e.data.text()
+  let payload = e.data.json()
+
+  // const { image, tag, url, title, text } = event.data.json();
+
+  // const options = {
+  //   data: url,
+  //   body: text,
+  //   icon: image,
+  //   vibrate: [200, 100, 200],
+  //   tag: tag,
+  //   image: image,
+  //   badge: "https://spyna.it/icons/favicon.ico",
+  //   actions: [{ action: "Detail", title: "View", icon: "https://via.placeholder.com/128/ff0000" }]
+  // };
+  // event.waitUntil(self.registration.showNotification(title, options));
+
   // 根据推送消息生成桌面通知并展现出来
   let promise = self.registration.showNotification(payload.title, {
-    body: payload.body,
-    icon: payload.icon,
-    data: {
-      url: payload.url
-    }
+    body: payload.text,
+    // icon: image,
+    vibrate: [200, 100, 200],
+    // tag: tag,
+    badge: "https://spyna.it/icons/favicon.ico",
+    data: payload.url,
+    actions: [{ action: "Detail", title: "View", icon: "https://via.placeholder.com/128/ff0000" }]
   })
   e.waitUntil(promise)
 })
 
 // 监听通知点击事件
 self.addEventListener('notificationclick', function (event) {
-  console.log('[Service Worker] Notification click Received.', event.notification.data)
+  console.log('[Service Worker] Notification click Received.', event)
   // 关闭窗口
   event.notification.close()
   // 打开网页

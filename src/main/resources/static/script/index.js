@@ -107,8 +107,8 @@ let subscritionId
 function sendNotification () {
   post(`/message/notify-all`, {
       title: "New Product Available ",
-      message: "HEY! Take a look at this brand new t-shirt!",
-      clickTarget: "new-product"
+      body: "HEY! Take a look at this brand new t-shirt!",
+      url: "/test"
   })
 }
 

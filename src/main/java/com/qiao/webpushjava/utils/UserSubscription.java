@@ -10,13 +10,13 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
-public class Subscription {
+public class UserSubscription {
 
     private String auth;
     private String key;
     private String endpoint;
 
-    public Subscription() {
+    public UserSubscription() {
         // Add BouncyCastle as an algorithm provider
         if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
             Security.addProvider(new BouncyCastleProvider());
