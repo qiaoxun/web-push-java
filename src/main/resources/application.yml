@@ -2,7 +2,6 @@
 server:
   port: 9990
 
-webPush:
-  gcmKey: BB9w2fVC4ernqZTbukecIE_Kzvbqiqa7nVRjVYqUZbjGzk62amKq6c3XFIMIJI_PUlig8iBpcC_KQe9I7Xysfzg
-  publicKey: BJ_I4k_oiXowxpxJ0jvkPwN451dbIZOfbwSqJU5BrhLTBwxSXBSeNElTte9DJENb3cANDLdmPt3rPgMvkDkbtfA
-  privateKey: 7u6fpCePYhEZ06hoI3lhuqV_3VkM5VigOWBUWoGANpU
+spring:
+  profiles:
+    active: dev

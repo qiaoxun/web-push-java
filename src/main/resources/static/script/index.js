@@ -1,9 +1,8 @@
 
 const pushServerPublicKey = 'BJ_I4k_oiXowxpxJ0jvkPwN451dbIZOfbwSqJU5BrhLTBwxSXBSeNElTte9DJENb3cANDLdmPt3rPgMvkDkbtfA'
 
-const host = ''
 function post (path, body) {
-  return fetch(`${host}${path}`, {
+  return fetch(path, {
     credentials: 'omit',
     headers: { 'content-type': 'application/json;charset=UTF-8', 'sec-fetch-mode': 'cors' },
     body: JSON.stringify(body),
@@ -20,7 +19,7 @@ function post (path, body) {
 }
 
 function get (path) {
-  return fetch(`${host}${path}`, {
+  return fetch(path, {
     credentials: 'omit',
     headers: { 'content-type': 'application/json;charset=UTF-8', 'sec-fetch-mode': 'cors' },
     method: 'GET',
@@ -98,8 +97,8 @@ function getUserSubscription () {
     })
 }
 
-let userSubscrition
-let subscritionId
+let userSubscription
+let subscriptionId
 
 /**
  * request the push server to send a notification, passing the id
@@ -122,10 +121,10 @@ function updateUserConsent (userConsent) {
   pushNotificationConsentSpan.innerHTML = userConsent
   if (userConsent === 'granted') {
     // enable push notification subscribe button
-    susbribeToPushNotificationButton.disabled = false
+    subscribeToPushNotificationButton.disabled = false
   } else {
     sendPushNotificationButton.disabled = true
-    susbribeToPushNotificationButton.disabled = true
+    subscribeToPushNotificationButton.disabled = true
   }
 }
 
@@ -139,21 +138,21 @@ function askUserPermission () {
 /**
  * creates a push notification subscription, that has to be sent to the push server
  */
-function susbribeToPushNotification () {
-  console.log('click susbribeToPushNotification')
-  createNotificationSubscription().then(function (subscrition) {
-    showUserSubscription(subscrition)
+function subscribeToPushNotification () {
+  console.log('click subscribeToPushNotification')
+  createNotificationSubscription().then(function (subscription) {
+    showUserSubscription(subscription)
   })
 }
 
 /**
  * displays the subscription details in the page and enables the 'send Subscription Button'
- * @param {PushSubscription} subscrition 
+ * @param {PushSubscription} subscription
  */
-function showUserSubscription (subscrition) {
-  userSubscrition = subscrition
+function showUserSubscription (subscription) {
+  userSubscription = subscription
 
-  // if (subscrition) {
+  // if (subscription) {
   //   console.log('subscription === ', subscription)
   //   let key = subscription.getKey ? subscription.getKey('p256dh') : ''
   //   let auth = subscription.getKey ? subscription.getKey('auth') : ''
@@ -162,10 +161,10 @@ function showUserSubscription (subscrition) {
   //   auth = btoa(String.fromCharCode.apply(null, new Uint8Array(auth)))
   //   console.log('key', key)
   //   console.log('auth', auth)
-  //   console.log('subscrition', subscrition)
+  //   console.log('subscription', subscription)
   // }
 
-  document.getElementById('user-susbription').innerHTML = JSON.stringify(subscrition, null, ' ')
+  document.getElementById('user-subscription').innerHTML = JSON.stringify(subscription, null, ' ')
   sendSubscriptionButton.disabled = false
 }
 
@@ -174,16 +173,16 @@ function showUserSubscription (subscrition) {
  */
 function sendSubscriptionToPushServer () {
 
-  let key = userSubscrition.getKey ? userSubscrition.getKey('p256dh') : '';
-  let auth = userSubscrition.getKey ? userSubscrition.getKey('auth') : '';
+  let key = userSubscription.getKey ? userSubscription.getKey('p256dh') : '';
+  let auth = userSubscription.getKey ? userSubscription.getKey('auth') : '';
   key = btoa(String.fromCharCode.apply(null, new Uint8Array(key)));
   auth = btoa(String.fromCharCode.apply(null, new Uint8Array(auth)));
   console.log('key === ', key)
   console.log('auth === ', auth)
-  console.log('userSubscrition === ', userSubscrition)
+  console.log('userSubscription === ', userSubscription)
 
   const data = {
-    endpoint: userSubscrition.endpoint,
+    endpoint: userSubscription.endpoint,
     expirationTime: null,
     keys: {
       auth: auth,
@@ -193,22 +192,22 @@ function sendSubscriptionToPushServer () {
 
   post('message/subscribe', data).then(function (response) {
     console.log(response)
-    subscritionId = 'test'
+    subscriptionId = 'test'
     sendPushNotificationButton.disabled = false
   })
 }
 
 // checks if the browser supports push notification and service workers
-const pushNotificationSuported = isPushNotificationSupported()
+const pushNotificationSupported = isPushNotificationSupported()
 
 const pushNotificationSupportedSpan = document.getElementById('push-notification-supported')
-pushNotificationSupportedSpan.innerHTML = pushNotificationSuported
+pushNotificationSupportedSpan.innerHTML = pushNotificationSupported
 
-const askUserPemissionButton = document.getElementById('ask-user-permission-button')
-askUserPemissionButton.addEventListener('click', askUserPermission)
+const askUserPermissionButton = document.getElementById('ask-user-permission-button')
+askUserPermissionButton.addEventListener('click', askUserPermission)
 
-const susbribeToPushNotificationButton = document.getElementById('create-notification-subscription-button')
-susbribeToPushNotificationButton.addEventListener('click', susbribeToPushNotification)
+const subscribeToPushNotificationButton = document.getElementById('create-notification-subscription-button')
+subscribeToPushNotificationButton.addEventListener('click', subscribeToPushNotification)
 
 const sendSubscriptionButton = document.getElementById('send-subscription-button')
 sendSubscriptionButton.addEventListener('click', sendSubscriptionToPushServer)
@@ -216,15 +215,16 @@ sendSubscriptionButton.addEventListener('click', sendSubscriptionToPushServer)
 const sendPushNotificationButton = document.getElementById('send-push-notification-button')
 sendPushNotificationButton.addEventListener('click', sendNotification)
 
-if (pushNotificationSuported) {
+if (pushNotificationSupported) {
   updateUserConsent(Notification.permission)
-  askUserPemissionButton.disabled = false
+  askUserPermissionButton.disabled = false
   // register the service worker: file 'sw.js' in the root of our project
   registerServiceWorker()
-  getUserSubscription().then(function (subscrition) {
-    if (subscrition) {
-      console.log('subscrition', subscrition)
-      showUserSubscription(subscrition)
+  getUserSubscription().then(function (subscription) {
+    if (subscription) {
+      console.log('subscription', subscription)
+
+      showUserSubscription(subscription)
     }
   })
 }
